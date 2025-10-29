@@ -16,8 +16,9 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
   const [copied, setCopied] = useState<string | null>(null);
 
   const handleCopy = async (proxy: ProxyItem) => {
+    const command = buildCommand(proxy, host);
     try {
-      const command = buildCommand(proxy, host);
+      
       if (!navigator.clipboard || !window.isSecureContext) {
         alert('当前环境不支持剪贴板功能，请手动复制以下内容：\n' + command);
         return;
@@ -27,7 +28,8 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
       setTimeout(() => setCopied(null), 2_000);
     } catch (error) {
       console.error('复制失败', error);
-      alert(`复制失败，请手动复制以下内容：\n${command}\n\n错误详情：${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
+      alert(`复制失败，请手动复制以下内容：\n${command}\n\n错误详情：${errorMessage}`);
     }
   };
 
