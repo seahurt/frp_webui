@@ -18,12 +18,16 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
   const handleCopy = async (proxy: ProxyItem) => {
     try {
       const command = buildCommand(proxy, host);
+      if (!navigator.clipboard || !window.isSecureContext) {
+        alert('当前环境不支持剪贴板功能，请手动复制以下内容：\n' + command);
+        return;
+      }
       await navigator.clipboard.writeText(command);
       setCopied(proxy.name);
       setTimeout(() => setCopied(null), 2_000);
     } catch (error) {
       console.error('复制失败', error);
-      alert('复制失败，请手动复制');
+      alert(`复制失败，请手动复制以下内容：\n${command}\n\n错误详情：${error.message}`);
     }
   };
 
