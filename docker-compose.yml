@@ -1,0 +1,13 @@
+services:
+  frp-webui:
+    build: .
+    container_name: frp-webui
+    environment:
+      - PORT=3000
+      - FRPS_HOST=${FRPS_HOST:-http://frps:7400}
+      - NEXT_PUBLIC_DEFAULT_FRPS_HOST=${NEXT_PUBLIC_DEFAULT_FRPS_HOST:-http://frps:7400}
+      - NEXT_PUBLIC_DEFAULT_REFRESH_INTERVAL=${NEXT_PUBLIC_DEFAULT_REFRESH_INTERVAL:-10}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on: []
