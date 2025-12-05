@@ -73,7 +73,7 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
               proxies.map((proxy) => (
                 <tr key={proxy.name} className="hover:bg-slate-800/30">
                   <td className="px-4 py-3 font-mono text-slate-100">{proxy.name}</td>
-                  <td className="px-4 py-3 text-slate-200">{proxy.conf.remotePort}</td>
+                  <td className="px-4 py-3 text-slate-200">{proxy.conf?.remotePort || 0}</td>
                   <td className="px-4 py-3 text-slate-200">{proxy.curConns}</td>
                   <td className="px-4 py-3 text-slate-200">{proxy.clientVersion}</td>
                   <td className="px-4 py-3">
