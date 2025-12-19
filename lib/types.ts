@@ -8,7 +8,7 @@ export interface ProxyConfig {
 
 export interface ProxyItem {
   name: string;
-  conf: ProxyConfig;
+  conf: ProxyConfig | null;
   clientVersion: string;
   todayTrafficIn: number;
   todayTrafficOut: number;

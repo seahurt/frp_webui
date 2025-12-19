@@ -18,7 +18,7 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
   const handleCopy = async (proxy: ProxyItem) => {
     const command = buildCommand(proxy, host);
     try {
-      
+
       if (!navigator.clipboard || !window.isSecureContext) {
         alert('当前环境不支持剪贴板功能，请手动复制以下内容：\n' + command);
         return;
@@ -78,11 +78,10 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
                   <td className="px-4 py-3 text-slate-200">{proxy.clientVersion}</td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                        proxy.status === 'online'
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${proxy.status === 'online'
                           ? 'bg-emerald-400/10 text-emerald-300'
                           : 'bg-rose-400/10 text-rose-300'
-                      }`}
+                        }`}
                     >
                       <span className="h-2 w-2 rounded-full bg-current" />
                       {proxy.status}
@@ -91,7 +90,8 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => handleCopy(proxy)}
-                      className="rounded bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-slate-700"
+                      className="rounded bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={proxy.status === 'offline'}
                     >
                       {copied === proxy.name ? '已复制' : '复制命令'}
                     </button>

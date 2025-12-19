@@ -23,6 +23,9 @@ function parseHost(rawHost: string): { protocol: string; hostname: string } {
 
 export function buildCommand(proxy: ProxyItem, host: string): string {
   const { protocol, hostname } = parseHost(host);
+  if (!proxy.conf) {
+    return '';
+  }
   const suffix = proxy.name.split('.').pop();
   const port = proxy.conf.remotePort;
 
