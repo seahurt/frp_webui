@@ -27,13 +27,21 @@ const STORAGE_KEYS = {
   refreshInterval: 'frp.webui.interval'
 } as const;
 
-const DEFAULT_HOST = process.env.NEXT_PUBLIC_DEFAULT_FRPS_HOST ?? 'http://localhost:7400';
-const DEFAULT_INTERVAL = Number.parseInt(process.env.NEXT_PUBLIC_DEFAULT_REFRESH_INTERVAL ?? '10', 10) || 10;
+const DEFAULT_HOST_FALLBACK = 'http://localhost:7400';
+const DEFAULT_INTERVAL_FALLBACK = 10;
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({
+  children,
+  defaultHost = DEFAULT_HOST_FALLBACK,
+  defaultInterval = DEFAULT_INTERVAL_FALLBACK
+}: {
+  children: React.ReactNode;
+  defaultHost?: string;
+  defaultInterval?: number;
+}) {
   const [credentials, setCredentials] = useState<Credentials | null>(null);
-  const [host, setHost] = useState<string>(DEFAULT_HOST);
-  const [refreshInterval, setRefreshInterval] = useState<number>(DEFAULT_INTERVAL);
+  const [host, setHost] = useState<string>(defaultHost);
+  const [refreshInterval, setRefreshInterval] = useState<number>(defaultInterval);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
