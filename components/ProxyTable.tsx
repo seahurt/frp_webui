@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
+import { Menu, Transition } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { buildCommand } from '@/lib/clipboard';
 import { ProxyItem } from '@/lib/types';
 
@@ -15,8 +17,8 @@ interface Props {
 export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
 
-  const handleCopy = async (proxy: ProxyItem) => {
-    const command = buildCommand(proxy, host);
+  const handleCopy = async (proxy: ProxyItem, type: 'http' | 'https' | 'ssh') => {
+    const command = buildCommand(proxy, host, type);
     try {
 
       if (!navigator.clipboard || !window.isSecureContext) {
@@ -24,7 +26,7 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
         return;
       }
       await navigator.clipboard.writeText(command);
-      setCopied(proxy.name);
+      setCopied(`${proxy.name}-${type}`);
       setTimeout(() => setCopied(null), 2_000);
     } catch (error) {
       console.error('复制失败', error);
@@ -88,13 +90,74 @@ export function ProxyTable({ proxies, host, isLoading, lastUpdatedAt, onRefresh 
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => handleCopy(proxy)}
-                      className="rounded bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 transition hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={proxy.status === 'offline'}
-                    >
-                      {copied === proxy.name ? '已复制' : '复制命令'}
-                    </button>
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        {copied?.startsWith(proxy.name) ? (
+                          <span className="inline-flex justify-center gap-x-1.5 rounded bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-400 ring-1 ring-inset ring-emerald-500/30">
+                            已复制 {copied.split('-')[1]?.toUpperCase()}
+                          </span>
+                        ) : (
+                          <Menu.Button
+                            disabled={proxy.status === 'offline'}
+                            className="inline-flex justify-center items-center gap-x-1 rounded bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-100 shadow-sm transition hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            复制命令
+                            <ChevronDownIcon className="-mr-1 h-4 w-4 text-slate-400" aria-hidden="true" />
+                          </Menu.Button>
+                        )}
+                      </div>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 z-50 mt-2 w-32 origin-top-right rounded-md bg-slate-800 shadow-lg ring-1 ring-slate-700 ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => handleCopy(proxy, 'http')}
+                                  className={`${
+                                    active ? 'bg-slate-700 text-slate-100' : 'text-slate-300'
+                                  } block w-full px-4 py-2 text-left text-xs font-medium`}
+                                >
+                                  复制 HTTP
+                                </button>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => handleCopy(proxy, 'https')}
+                                  className={`${
+                                    active ? 'bg-slate-700 text-slate-100' : 'text-slate-300'
+                                  } block w-full px-4 py-2 text-left text-xs font-medium`}
+                                >
+                                  复制 HTTPS
+                                </button>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => handleCopy(proxy, 'ssh')}
+                                  className={`${
+                                    active ? 'bg-slate-700 text-slate-100' : 'text-slate-300'
+                                  } block w-full px-4 py-2 text-left text-xs font-medium`}
+                                >
+                                  复制 SSH
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
                   </td>
                 </tr>
               ))
