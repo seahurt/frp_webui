@@ -21,13 +21,24 @@ function parseHost(rawHost: string): { protocol: string; hostname: string } {
   }
 }
 
-export function buildCommand(proxy: ProxyItem, host: string): string {
+export function buildCommand(proxy: ProxyItem, host: string, type?: 'http' | 'https' | 'ssh'): string {
   const { protocol, hostname } = parseHost(host);
   if (!proxy.conf) {
     return '';
   }
   const suffix = proxy.name.split('.').pop();
   const port = proxy.conf.remotePort;
+
+  if (type) {
+    switch (type) {
+      case 'ssh':
+        return `ssh -p ${port} ${hostname}`;
+      case 'http':
+        return `http://${hostname}:${port}`;
+      case 'https':
+        return `https://${hostname}:${port}`;
+    }
+  }
 
   switch (suffix) {
     case 'ssh':
